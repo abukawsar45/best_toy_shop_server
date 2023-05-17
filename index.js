@@ -28,6 +28,24 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    const toysCollection = client.db('allToys').collection('toys');
+
+    // get method
+    app.get('/allToys', async (req, res) => {
+      const result = await toysCollection.find().toArray();
+      console.log(result);
+      res.send(result);
+    })
+
+
+    // post method
+    app.post('/addToys', async (req, res) => {
+      const add = req.body;
+      console.log(add);
+      const result = await toysCollection.insertOne(add);
+      res.send(result);
+    })
+
 
 
 
