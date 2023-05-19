@@ -36,6 +36,12 @@ async function run() {
       res.send(result);
     })
 
+    // get data use specific email 
+    app.get('/myToys/:email', async (req, res) => {
+      // console.log(req.params.email);
+      const result = await toysCollection.find({ postBy: req.params.email }).toArray(); 
+      res.send(result)
+    })
 
     // post method
     app.post('/addToys', async (req, res) => {
@@ -60,33 +66,6 @@ async function run() {
       console.log({result});
       res.send(result)
     })
-
-//     app.put('/myToys/:id', async (req, res) => {
- 
-//     const id = req.params.id;
-//     const filter = { _id: new ObjectId(id) };
-//     const updateToys = req.body;
-//     console.log(updateToys);
-//     const updateDoc = {
-//       $set: { ...updateToys }
-//     };
-//     const result = await toysCollection.updateOne(filter, updateDoc);
-//     console.log(result);
-//     res.send(result);
-
-//     // if (result.matchedCount === 1) {
-//     //   res.status(200).json({ message: 'Toy updated successfully' });
-//     // } else {
-//     //   res.status(404).json({ message: 'Toy not found' });
-//     // }
-
-//   // catch (error) {
-//   //   console.error(error);
-//   //   res.status(500).json({ message: 'Internal server error' });
-//   // }
-// });
-
-
 
 
     // delete method  
