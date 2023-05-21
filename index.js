@@ -11,6 +11,7 @@ app.use(express.json());
 
 
 
+// const uri = 'mongodb://0.0.0.0:27017/'
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9lqzgjv.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,6 +36,11 @@ async function run() {
       // console.log(result);
       res.send(result);
     })
+    app.get('/allToysWithLimit', async (req, res) => {
+      const result = await toysCollection.find().limit(20).toArray();
+      // console.log(result);
+      res.send(result);
+    })
  
     app.get('/myToys/:email', async (req, res) => {
       // console.log(req.params.email);
@@ -51,9 +57,29 @@ async function run() {
 
     })
 
+
+app.get('/subCategoryName/:searchSubCategory', async (req, res) => {
+  const searchSubCategory = req.params.searchSubCategory; 
+  console.log(searchSubCategory);
+
+  const regex = new RegExp(`^${searchSubCategory}$`, 'i'); 
+
+  const result = await toysCollection.find({ subCategory: { $regex: regex } }).toArray();
+
+  if (result.length === 0) {
+    // Handle invalid category here
+    const allResults = await toysCollection.find({}).toArray();
+    return res.send(allResults);
+  }
+
+  // console.log(result);
+  return res.send(result);
+});
+
     // post method
     app.post('/addToys', async (req, res) => {
       const add = req.body;
+      const postedTime = new Date()
       // console.log(add);
       const result = await toysCollection.insertOne(add);
       res.send(result);
@@ -77,7 +103,7 @@ async function run() {
 
 
     // delete method  
-    app.delete('/myToys/:id', async (req, res) => {
+    app.delete('/myAllToys/:id', async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await toysCollection.deleteOne(query);
@@ -105,7 +131,7 @@ run().catch(console.dir);
 // console.log(process.env.DB_USER);
 
 app.get('/', (req, res) => {
-  res.send('amake khuje pawa gese')
+  res.send('Server connected')
 })
 
 app.listen(port, () => {
