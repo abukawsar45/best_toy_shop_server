@@ -43,7 +43,7 @@ async function run() {
     })
 //  
     // app.get('/myToys/:email', async (req, res) => {
-    //   // console.log(req.params.email);
+      // console.log(req.params.email);
     //   const result = await toysCollection.find({ postBy: req.params.email }).toArray(); 
     //   res.send(result)
     // })
@@ -82,6 +82,12 @@ app.get('/myToys/:email', async (req, res) => {
 
     })
 
+    app.get('/Carnameby/:name',async (req, res) =>{
+      const name = req.params.name.toLocaleLowerCase();
+      
+      const result = await toysCollection.find({ carName: { $regex: name, $options: "i" } }).toArray();
+      res.send(result)
+    })
 
 app.get('/subCategoryName/:searchSubCategory', async (req, res) => {
   const searchSubCategory = req.params.searchSubCategory; 
@@ -160,5 +166,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Server listening on ${port}`);
+  // console.log(`Server listening on ${port}`);
 })
