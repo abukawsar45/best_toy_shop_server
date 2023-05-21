@@ -41,12 +41,37 @@ async function run() {
       // console.log(result);
       res.send(result);
     })
- 
-    app.get('/myToys/:email', async (req, res) => {
-      // console.log(req.params.email);
-      const result = await toysCollection.find({ postBy: req.params.email }).toArray(); 
-      res.send(result)
-    })
+//  
+    // app.get('/myToys/:email', async (req, res) => {
+    //   // console.log(req.params.email);
+    //   const result = await toysCollection.find({ postBy: req.params.email }).toArray(); 
+    //   res.send(result)
+    // })
+app.get('/myToys/:email', async (req, res) => {
+  const email = req.params.email;
+  const sortBy = req.query.sortBy || 'ascending'; // Default to ascending order if sortBy parameter is not provided
+
+  let sortOption;
+  if (sortBy === 'descending') {
+    sortOption = { price: -1 }; // Sort by price in descending order
+  } else {
+    sortOption = { price: 1 }; // Sort by price in ascending order
+  }
+
+  try {
+    const result = await toysCollection
+      .find({ postBy: email })
+      .sort(sortOption)
+      .toArray();
+
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
     app.get('/allToys/:id',async (req, res)=>{
       const id = req.params.id;
@@ -60,7 +85,7 @@ async function run() {
 
 app.get('/subCategoryName/:searchSubCategory', async (req, res) => {
   const searchSubCategory = req.params.searchSubCategory; 
-  console.log(searchSubCategory);
+  // console.log(searchSubCategory);
 
   const regex = new RegExp(`^${searchSubCategory}$`, 'i'); 
 
@@ -79,7 +104,7 @@ app.get('/subCategoryName/:searchSubCategory', async (req, res) => {
     // post method
     app.post('/addToys', async (req, res) => {
       const add = req.body;
-      const postedTime = new Date()
+      add.postedTime = new Date()
       // console.log(add);
       const result = await toysCollection.insertOne(add);
       res.send(result);
